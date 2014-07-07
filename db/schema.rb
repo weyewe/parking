@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140707064622) do
+ActiveRecord::Schema.define(version: 20140707075154) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -99,7 +99,20 @@ ActiveRecord::Schema.define(version: 20140707064622) do
     t.datetime "updated_at"
   end
 
+  create_table "price_rule_usages", force: true do |t|
+    t.integer  "price_rule_id"
+    t.integer  "ticket_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "price_rules", force: true do |t|
+    t.integer  "vehicle_case"
+    t.boolean  "is_base_price",                          default: false
+    t.integer  "hour"
+    t.decimal  "price",         precision: 10, scale: 2, default: 0.0
+    t.boolean  "is_deleted",                             default: false
+    t.datetime "deleted_at"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -114,20 +127,29 @@ ActiveRecord::Schema.define(version: 20140707064622) do
   end
 
   create_table "subcription_products", force: true do |t|
-    t.integer  "duration",                             default: 0
+    t.integer  "duration",                                          default: 0
     t.string   "name"
     t.text     "description"
-    t.decimal  "price",       precision: 10, scale: 2, default: 0.0
+    t.integer  "vehicle_case"
+    t.decimal  "price",                    precision: 10, scale: 2, default: 0.0
+    t.boolean  "is_deactivated",                                    default: false
+    t.boolean  "deactivation_date"
+    t.text     "deactivation_description"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
   create_table "subcription_registrations", force: true do |t|
-    t.integer  "subcription_product"
+    t.integer  "subcription_product_id"
     t.integer  "vehicle_registration_id"
     t.datetime "registration_date"
     t.datetime "finish_subcription_date"
     t.datetime "start_subcription_date"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "tickets", force: true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -168,8 +190,9 @@ ActiveRecord::Schema.define(version: 20140707064622) do
   create_table "vehicle_registrations", force: true do |t|
     t.integer  "customer_id"
     t.integer  "vehicle_id"
-    t.boolean  "is_deactivated",    default: false
+    t.boolean  "is_deactivated",           default: false
     t.datetime "deactivation_date"
+    t.text     "deactivation_description"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

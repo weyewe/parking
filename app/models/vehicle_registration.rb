@@ -2,8 +2,8 @@ class VehicleRegistration < ActiveRecord::Base
    
   validates_presence_of :customer_id, :vehicle_id  
   
-  belongs_to :customer_id
-  belongs_to :vehicle_id 
+  belongs_to :customer
+  belongs_to :vehicle 
   
   has_many :subcription_registrations
   has_many :subcription_products ,:through => :subcription_registrations 
@@ -13,7 +13,7 @@ class VehicleRegistration < ActiveRecord::Base
   validate :no_duplicated_vehicle_registration 
   
   
-  has_many :tickets 
+  # has_many :tickets 
   
   def valid_customer_id
     return if not customer_id.present? 
@@ -66,9 +66,9 @@ class VehicleRegistration < ActiveRecord::Base
   
   def self.create_object( params ) 
     new_object           = self.new
-  
     new_object.customer_id    = params[:customer_id]
     new_object.vehicle_id  = params[:vehicle_id] 
+    
     new_object.save
     
     return new_object

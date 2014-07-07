@@ -81,52 +81,78 @@ data_entry_role = Role.create!(
   
   customer_array = [customer_1, customer_2, customer_3 ]
   
-  item_type_pc = ItemType.create_object(
-    :name => "PC",
-    :description => "Seperangkat komputer: mouse, CPU, Monitor, Speaker (optional)"
-  )
+  puts "Total customer : #{Customer.count}"
   
-  item_type_laptop = ItemType.create_object(
-    :name => "Laptop",
-    :description => "Awesome"
-  )
-  
-  item_type_array = [item_type_pc, item_type_laptop]
-  
+
+  (1..3).each do |x|
+    vehicle_case = VEHICLE_CASE[:car]
+    license_plate = "b  #{x} #{vehicle_case}"
+    Vehicle.create_object(
+      :license_plate_no => license_plate , 
+      :vehicle_case     => vehicle_case,
+      :description      =>  "Description #{vehicle_case}"
+    )
+    
+    vehicle_case = VEHICLE_CASE[:motor]
+    license_plate = "b  #{x} #{vehicle_case}"
+    Vehicle.create_object(
+      :license_plate_no => license_plate , 
+      :vehicle_case     => vehicle_case,
+      :description      =>  "Description #{vehicle_case}"
+    )
+
+    
+  end
+
+
+  puts "Total vehicle: #{Vehicle.count}"
   
   (1..3).each do |x|
-    customer_array.each do |customer_object|
-      item_type_array.each do |type_object|
-        
-        a=  Item.create_object(
-          :customer_id              => customer_object.id,
-          :item_type_id                  => type_object.id,
-          :description              => "#{customer_object.name} #{type_object.name} #{x} ",
-          :manufactured_at          => DateTime.new(2011, 10,10), 
-          :warranty_expiry_date     => DateTime.new(2013, 10,10)
-        )
-        
-        a.errors.messages.each {|x| puts "Item error: #{x}"}
-      end
-    end
+    
+    vehicle_case = VEHICLE_CASE[:car]
+    duration = vehicle_case* x * 30 
+    price = duration * BigDecimal("1000") * vehicle_case 
+    
+    SubcriptionProduct.create_object(
+      :name         => "Name #{x}, #{duration}"             ,
+      :vehicle_case => vehicle_case                         ,
+      :duration     => duration                             ,
+      :description  => "description #{x}, #{vehicle_case}"  ,
+      :price        => price
+
+    )
+    
+    
+    vehicle_case = VEHICLE_CASE[:motor]
+    duration = vehicle_case* x * 30 
+    price = duration * BigDecimal("1000") * vehicle_case 
+    
+    SubcriptionProduct.create_object(
+      :name         => "Name #{x}, #{duration}"             ,
+      :vehicle_case => vehicle_case                         ,
+      :duration     => duration                             ,
+      :description  => "description #{x}, #{vehicle_case}"  ,
+      :price        => price
+
+    )
+    
+    
   end
   
-  puts "Total item: #{Item.all.count}"
+  puts "Total subcription product: #{SubcriptionProduct.count}"
   
+  counter = 0 
+  Vehicle.all.each do |vehicle|
+    
+    index = counter % customer_array.length 
+    
+    VehicleRegistration.create_object(
+      :customer_id    => customer_array[index].id, 
+      :vehicle_id     => vehicle.id 
+    )
+    counter += 1 
+  end
   
+  puts "Total vehicle registration: #{VehicleRegistration.count}"
    
-   customer = Customer.first
-   customer.items.each do |item|
-     Maintenance.create_object(
-       :item_id        => item.id, 
-       :customer_id    => customer.id           ,
-       :user_id        => User.first.id         ,
-       :complaint_date => DateTime.now          ,
-       :complaint      => "awesome complaint"   ,
-       :complaint_case => MAINTENANCE_CASE[:emergency]
-      )
-   end
-  
-  
-  puts "Total maintenance: #{Maintenance.all.count}"
   

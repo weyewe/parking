@@ -5,12 +5,25 @@ class SubcriptionProduct < ActiveRecord::Base
   
   
   validate :valid_price
+  validate :valid_vehicle_case
    
    
   has_many :vehicle_registrations, :through => :subcription_registrations 
   has_many :subcription_registrations 
   
   has_many :tickets 
+  
+  def valid_vehicle_case
+    return if not vehicle_case.present? 
+    if not [
+              VEHICLE_CASE[:car],
+              VEHICLE_CASE[:motor]].include?( vehicle_case  ) 
+              
+      self.errors.add(:vehicle_case , "Harus ada jenis kendaraan")
+      return self
+    end
+  end
+  
   
   def valid_price
     return if not price.present?
@@ -36,6 +49,7 @@ class SubcriptionProduct < ActiveRecord::Base
   def self.create_object( params ) 
     new_object          = self.new
     new_object.name     = params[:name]
+    new_object.vehicle_case = params[:vehicle_case]
     new_object.duration = params[:duration]
     new_object.description      = params[:description    ]
     new_object.price      =BigDecimal( params[:price] || '0')
@@ -61,6 +75,7 @@ class SubcriptionProduct < ActiveRecord::Base
     
     
     self.name     = params[:name]
+    self.vehicle_case = params[:vehicle_case]
     self.duration = params[:duration]
     self.description      = params[:description    ]
     self.price      =BigDecimal( params[:price] || '0')
@@ -104,6 +119,6 @@ class SubcriptionProduct < ActiveRecord::Base
   
   
   def self.active_objects
-    self.where(:is_deactivated => false )
+    self.where(:is_deleted => false )
   end
 end

@@ -4,6 +4,7 @@ class CreateSubcriptionProducts < ActiveRecord::Migration
       t.integer :duration, :default => 0  # how many days
       t.string :name 
       t.text :description 
+      t.integer :vehicle_case 
       
       t.decimal :price , :default        => 0,  :precision => 10, :scale => 2 
       

@@ -27,7 +27,7 @@ class Vehicle < ActiveRecord::Base
   def self.create_object( params ) 
     new_object           = self.new
   
-    new_object.license_plate_no    =  ( params[:license_plate_no].present? ? params[:license_plate_no   ].to_s.upcase.gsub(/\s+/, "") : nil )  
+    new_object.license_plate_no    =  ( params[:license_plate_no].present? ? params[:license_plate_no].to_s.upcase.gsub(/\s+/, "") : nil )  
     new_object.vehicle_case  = params[:vehicle_case]
     new_object.description      = params[:description    ] 
     new_object.save
@@ -39,7 +39,7 @@ class Vehicle < ActiveRecord::Base
    
   
   def update_object(params)
-    self.license_plate_no    =  ( params[:license_plate_no].present? ? paramslicense_plate_noname   ].to_s.upcase.gsub(/\s+/, "") : nil )  
+    self.license_plate_no    =  ( params[:license_plate_no].present? ? params[:license_plate_no].to_s.upcase.gsub(/\s+/, "") : nil )  
     self.vehicle_case  = params[:vehicle_case]
     self.description      = params[:description    ]
     
