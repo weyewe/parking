@@ -205,4 +205,46 @@ data_entry_role = Role.create!(
 
   puts "Total price rule: #{PriceRule.count}"
    
+   
+  # create subcription_registration 
+  # create ticket 
+  
+  # done finish. 
+  
+  start_subcription = DateTime.now 
+  motor  = Vehicle.where(:vehicle_case => VEHICLE_CASE[:motor]).first 
+  motor_registration = VehicleRegistration.find_by_vehicle_id( motor.id )
+  motor_subcription_product = SubcriptionProduct.where(:vehicle_case => VEHICLE_CASE[:motor]).first 
+  
+  car  = Vehicle.where(:vehicle_case => VEHICLE_CASE[:car]).first 
+  car_registration = VehicleRegistration.find_by_vehicle_id( car.id )
+  car_subcription_product = SubcriptionProduct.where(:vehicle_case => VEHICLE_CASE[:car]).first 
+  
+  
+  motor_subcription_registration = SubcriptionRegistration.create_object(
+    :vehicle_registration_id => motor_registration.id         ,
+    :subcription_product_id  => motor_subcription_product.id  ,
+    :registration_date       => start_subcription - 2.days    ,
+    :start_subcription_date  => start_subcription
+  )
+  
+  car_subcription_registration = SubcriptionRegistration.create_object(
+    :vehicle_registration_id => car_registration.id         ,
+    :subcription_product_id  => car_subcription_product.id  ,
+    :registration_date       => start_subcription - 2.days    ,
+    :start_subcription_date  => start_subcription
+  )
+  
+  puts "Total subcripton regstration: #{SubcriptionRegistration.count}"
+  
+  
+  motor_ticket = Ticket.create_object(
+    :license_plate_no => motor.license_plate_no , 
+    :vehicle_case     => VEHICLE_CASE[:motor],
+    :entry_datetime   => start_subcription + 3.hours 
+
+  )
+  
+  puts "Total ticket: #{Ticket.count}"
+  
   

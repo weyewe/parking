@@ -150,16 +150,18 @@ ActiveRecord::Schema.define(version: 20140707075154) do
   end
 
   create_table "tickets", force: true do |t|
-    t.string   "code"
     t.string   "license_plate_no"
     t.integer  "vehicle_case"
     t.datetime "entry_datetime"
-    t.boolean  "is_subcription",   default: false
-    t.integer  "contact_id"
-    t.boolean  "is_printed",       default: false
-    t.boolean  "is_exit",          default: false
+    t.string   "code"
+    t.integer  "customer_id"
+    t.integer  "vehicle_id"
+    t.boolean  "is_subcription",              default: false
+    t.integer  "subcription_registration_id"
+    t.boolean  "is_printed",                  default: false
+    t.boolean  "is_exit",                     default: false
     t.datetime "exit_datetime"
-    t.boolean  "is_deleted",       default: false
+    t.boolean  "is_deleted",                  default: false
     t.datetime "deleted_at"
     t.datetime "created_at"
     t.datetime "updated_at"

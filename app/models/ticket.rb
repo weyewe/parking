@@ -26,7 +26,7 @@ class Ticket < ActiveRecord::Base
     while not unique  do
       proposed_booking_code =  UUIDTools::UUID.timestamp_create.to_s[0..4]
 
-      counter = Booking.where{
+      counter = Ticket.where{
         (code.eq proposed_booking_code) & 
         (is_exit.eq false ) & 
         (is_deleted.eq false) 
@@ -49,10 +49,13 @@ class Ticket < ActiveRecord::Base
     vehicle_registration = VehicleRegistration.find_by_vehicle_id object.id 
     return if vehicle_registration.nil? 
     
+    entry_datetime = self.entry_datetime  
+    
+    
     active_subcription = SubcriptionRegistration.where{
       (finish_subcription_date.gte entry_datetime) & 
       (start_subcription_date.lt entry_datetime) & 
-      ( vehicle_registartion_id.eq vehicle_registration.id )
+      ( vehicle_registration_id.eq vehicle_registration.id )
     }.first 
     
     self.is_subcription = true 
