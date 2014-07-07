@@ -112,6 +112,34 @@ describe SubcriptionRegistration do
         @sr_2.errors.size.should_not == 0
         @sr_2.should_not be_valid
       end
+      
+      it "should not create overlap subcription" do
+        @sr_2 = SubcriptionRegistration.create_object(
+
+          :vehicle_registration_id =>  @car_vr_1.id ,
+          :subcription_product_id  => @sp_car_1.id,
+          :registration_date       => @current_date     ,
+          :start_subcription_date  => @start_subcription_date + 5.days,
+        )
+        
+        @sr_2.errors.size.should_not == 0
+        @sr_2.should_not be_valid
+      end
+      
+      
+      it "should not create overlap subcription" do
+        @sr_2 = SubcriptionRegistration.create_object(
+
+          :vehicle_registration_id =>  @car_vr_1.id ,
+          :subcription_product_id  => @sp_car_1.id,
+          :registration_date       => @current_date     ,
+          :start_subcription_date  => @start_subcription_date - 5.days,
+        )
+        
+        
+        @sr_2.errors.size.should_not == 0
+        @sr_2.should_not be_valid
+      end
     end
     
      

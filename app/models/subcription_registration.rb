@@ -72,7 +72,7 @@ class SubcriptionRegistration < ActiveRecord::Base
         ) |
         (
           ( start_subcription_date.gte current_start_subcription) &
-          ( start_subcription_date.lte current_start_subcription) &  
+          ( start_subcription_date.lte current_finish_subcription) &  
           ( finish_subcription_date.gte current_finish_subcription )
         ) 
       )
@@ -95,7 +95,7 @@ class SubcriptionRegistration < ActiveRecord::Base
         ) |
         (
           ( start_subcription_date.gte current_start_subcription) &
-          ( start_subcription_date.lte current_start_subcription) &  
+          ( start_subcription_date.lte current_finish_subcription) &  
           ( finish_subcription_date.gte current_finish_subcription )
         ) 
       )
