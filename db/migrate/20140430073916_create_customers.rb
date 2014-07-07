@@ -3,8 +3,9 @@ class CreateCustomers < ActiveRecord::Migration
     create_table :customers do |t|
       
       t.string :name 
+      t.string :id_card_number 
+      
       t.text :address
-      t.text :pic
       t.text :contact
       t.string :email 
       

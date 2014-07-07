@@ -246,5 +246,6 @@ data_entry_role = Role.create!(
   )
   
   puts "Total ticket: #{Ticket.count}"
+  puts "MotorTicket: #{motor_ticket.inspect}"
   
   

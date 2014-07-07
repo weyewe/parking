@@ -39,11 +39,11 @@ ActiveRecord::Schema.define(version: 20140707075154) do
 
   create_table "customers", force: true do |t|
     t.string   "name"
+    t.string   "id_card_number"
     t.text     "address"
-    t.text     "pic"
     t.text     "contact"
     t.string   "email"
-    t.boolean  "is_deleted", default: false
+    t.boolean  "is_deleted",     default: false
     t.datetime "created_at"
     t.datetime "updated_at"
   end

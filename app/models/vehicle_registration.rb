@@ -26,7 +26,7 @@ class VehicleRegistration < ActiveRecord::Base
   
   def valid_vehicle_id
     return if not vehicle_id.present? 
-    object = Vehicle.find_by_id customer_id
+    object = Vehicle.find_by_id vehicle_id
     if object.nil?
       self.errors.add(:vehicle_id, "Harus ada")
       return self 
@@ -38,7 +38,6 @@ class VehicleRegistration < ActiveRecord::Base
     return if not customer_id.present? 
     
     ordered_detail_count  = VehicleRegistration.where(
-      :customer_id => customer_id,
       :vehicle_id => vehicle_id,
       :is_deactivated => false 
     ).count 
@@ -92,6 +91,13 @@ class VehicleRegistration < ActiveRecord::Base
     return self
   end
   
+  def deactivate_object(params)
+    self.is_deactivated = true 
+    self.deactivation_date = params[:deactivation_date]
+    self.deactivation_description = params[:deactivation_description]
+    self.save
+  end
+  
   def delete_object
     
     if self.tickets.count !=  0
@@ -101,9 +107,6 @@ class VehicleRegistration < ActiveRecord::Base
      
     
     self.destroy
-  
-  
-    
   end 
   
   
