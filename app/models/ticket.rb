@@ -3,6 +3,7 @@ class Ticket < ActiveRecord::Base
   validates_presence_of :license_plate_no, :vehicle_case , :entry_datetime   
   
   validate :valid_vehicle_case 
+  validate :no_double_active_license_plate_number
    
   def valid_vehicle_case
     return if not vehicle_case.present? 
@@ -11,6 +12,33 @@ class Ticket < ActiveRecord::Base
               VEHICLE_CASE[:motor]].include?( vehicle_case  ) 
               
       self.errors.add(:vehicle_case , "Harus ada jenis kendaraan")
+      return self
+    end
+  end
+  
+  def no_double_active_license_plate_number
+    return if not license_plate_no.present?  
+    
+    ordered_detail_count  = Ticket.where(
+      :license_plate_no => license_plate_no,
+      :is_deleted => false , 
+      :is_exit => false 
+    ).count 
+    
+    ordered_detail = Ticket.where(
+      :license_plate_no => license_plate_no,
+      :is_deleted => false , 
+      :is_exit => false
+    ).first
+    
+    if self.persisted? and ordered_detail.id != self.id   and ordered_detail_count == 1
+      self.errors.add(:license_plate_no, "Sudah ada kendaraan dengan nomor #{license_plate_no}")
+      return self 
+    end
+    
+    # there is item with such item_id in the database
+    if not self.persisted? and ordered_detail_count != 0 
+      self.errors.add(:license_plate_no, "Sudah ada kendaraan dengan nomor #{license_plate_no}")
       return self
     end
   end
@@ -98,6 +126,93 @@ class Ticket < ActiveRecord::Base
     end
     
     return self
+  end
+  
+  def print
+    self.is_printed = true
+    self.save 
+  end
+  
+  
+  def validate_exit_conditions
+    # must have base price rule 
+    # 
+    base_price_rule = PriceRule.where(
+        :vehicle_case => self.vehicle_case, 
+        :is_deleted => false, 
+        :is_base_price => true ).first
+        
+    if base_price_rule.nil?
+      self.errors.add(:generic_errors, "harus ada base price rule")
+      return self 
+    end
+  end
+  
+  def assign_price_payable
+    
+    duration = self.exit_datetime - self.entry_datetime
+    minutes = (duration * 24 * 60).to_i    
+    
+    total_number_of_hours =  (minutes.to_f / 60).ceil\
+    
+    base_price_rule = PriceRule.where(
+        :vehicle_case => self.vehicle_case, 
+        :is_deleted => false, 
+        :is_base_price => true ).first
+        
+    specific_price_rules = PriceRule.where(
+        :vehicle_case => self.vehicle_case, 
+        :is_deleted => false ,
+        :is_base_price => false ).order("hour ASC")
+    
+    amount = BigDecimal("0")
+    (1..duration).each do |hour|
+      
+      specific_price_rule = specific_price_rules.where(:hour => hour).first 
+      selected_price_rule = base_price_rule 
+      selected_price_rule = specific_price_rule if specific_price_rule
+      
+      PriceRuleUsage.create_object(
+        :ticket_id => self.id,
+        :price_rule_id => selected_price_rule.id 
+      )
+      
+      amount += selected_price_rule.price
+      
+    end
+    
+    self.price = amount
+    self.save 
+    
+    
+  end
+  
+  
+  def exit_parking( params ) 
+    if not self.is_printed?
+      self.errors.add(:generic_errors, "Belum ada pencetakan tiket parkir")
+      return self
+    end
+    
+    if self.is_exit?
+      self.errors.add(:generic_errors, "Sudah exit")
+      return self
+    end
+    
+    if self.is_deleted?
+      self.errors.add(:generic_errors, "Sudah dihapus")
+      return self 
+    end
+    
+    self.is_exit = true
+    self.exit_datetime = params[:exit_datetime]
+    self.validate_exit_conditions
+    if self.errors.size == 0 and  self.save 
+      self.assign_price_payable
+    end
+  end
+  
+  def pay( params ) 
   end
   
   def delete_object
