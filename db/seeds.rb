@@ -154,5 +154,55 @@ data_entry_role = Role.create!(
   end
   
   puts "Total vehicle registration: #{VehicleRegistration.count}"
+  
+  
+  
+  
+  vehicle_case =  VEHICLE_CASE[:motor]
+  price  = BigDecimal("2000")
+  PriceRule.create_object(
+    :is_base_price => true           ,
+    :vehicle_case  => vehicle_case    ,
+    :hour          =>  nil             ,
+    :price         =>  price
+  )
+  
+  
+  vehicle_case =  VEHICLE_CASE[:car]
+  price  = BigDecimal("4000")
+  PriceRule.create_object(
+    :is_base_price => true           ,
+    :vehicle_case  => vehicle_case    ,
+    :hour          => nil              ,
+    :price         =>    price
+  )
+  
+  
+
+  (1..3).each do |x|
+    vehicle_case =  VEHICLE_CASE[:motor]
+    price  = BigDecimal("2000")
+    a =  PriceRule.create_object(
+    :is_base_price => false           ,
+    :vehicle_case  => vehicle_case    ,
+    :hour          => x               ,
+    :price         =>  x * price
+    )
+
+    a.errors.messages.each {|x| puts "The error: #{x}"}
+
+
+    vehicle_case =  VEHICLE_CASE[:car]
+    price  = BigDecimal("4000")
+    PriceRule.create_object(
+    :is_base_price => false           ,
+    :vehicle_case  => vehicle_case    ,
+    :hour          => x               ,
+    :price         =>  x * price
+    )
+
+  end
+
+  puts "Total price rule: #{PriceRule.count}"
    
   

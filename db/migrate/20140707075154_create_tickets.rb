@@ -1,7 +1,6 @@
 class CreateTickets < ActiveRecord::Migration
   def change
     create_table :tickets do |t|
-      t.string :code 
       
       
       # on create 
@@ -11,10 +10,12 @@ class CreateTickets < ActiveRecord::Migration
       
       # on save, under create, assign code 
       t.string :code
-      t.boolean :is_subcription, :default => false 
+      t.integer :customer_id 
+      t.integer :vehicle_id 
       
-      # optional 
-      t.integer :contact_id 
+      t.boolean :is_subcription, :default => false  
+      t.integer :subcription_registration_id
+  
       
       
       t.boolean :is_printed , :default => false 
