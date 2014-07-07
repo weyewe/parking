@@ -13,6 +13,7 @@ class SubcriptionRegistration < ActiveRecord::Base
   validate :valid_subcription_product_id  
   
   validate :vehicle_registration_has_equal_vehicle_case_to_subcription_product
+  validate :vehicle_registration_does_not_have_overlapping_subcription
   
   
   
@@ -43,6 +44,71 @@ class SubcriptionRegistration < ActiveRecord::Base
     
     if vehicle_registration.vehicle.vehicle_case != subcription_product.vehicle_case 
       self.errors.add(:generic_errors, "Tipe kendaraan harus sesuai dengan tipe product: harus sama-sama mobil atau motor")
+      return self
+    end
+  end
+  
+  def vehicle_registration_does_not_have_overlapping_subcription
+    return if not vehicle_registration_id.present? 
+    return if not subcription_product_id.present?
+    
+    
+    current_start_subcription = self.start_subcription_date 
+    current_finish_subcription = self.start_subcription_date + subcription_product.duration.days 
+    current_vehicle_registration_id = vehicle_registration_id 
+    
+    ordered_detail_count = SubcriptionRegistration.where{
+      (vehicle_registration_id.eq current_vehicle_registration_id ) & 
+      (
+        (
+          ( start_subcription_date.lte current_start_subcription) & 
+          ( finish_subcription_date.gte current_start_subcription) & 
+          ( finish_subcription_date.lte current_finish_subcription )
+        ) | 
+        (
+          ( start_subcription_date.gte current_start_subcription) & 
+          ( start_subcription_date.lte current_finish_subcription) & 
+          ( finish_subcription_date.lte current_finish_subcription )
+        ) |
+        (
+          ( start_subcription_date.gte current_start_subcription) &
+          ( start_subcription_date.lte current_start_subcription) &  
+          ( finish_subcription_date.gte current_finish_subcription )
+        ) 
+      )
+    }.count
+    
+    return if ordered_detail_count == 0 
+    
+    ordered_detail = self.class.where{
+      (vehicle_registration_id.eq current_vehicle_registration_id ) & 
+      (
+        (
+          ( start_subcription_date.lte current_start_subcription) & 
+          ( finish_subcription_date.gte current_start_subcription) & 
+          ( finish_subcription_date.lte current_finish_subcription )
+        ) | 
+        (
+          ( start_subcription_date.gte current_start_subcription) & 
+          ( start_subcription_date.lte current_finish_subcription) & 
+          ( finish_subcription_date.lte current_finish_subcription )
+        ) |
+        (
+          ( start_subcription_date.gte current_start_subcription) &
+          ( start_subcription_date.lte current_start_subcription) &  
+          ( finish_subcription_date.gte current_finish_subcription )
+        ) 
+      )
+    }.first
+    
+    if self.persisted? and ordered_detail.id != self.id   and ordered_detail_count == 1
+      self.errors.add(:generic_errors, "Ada overlapping tanggal subcription")
+      return self 
+    end
+    
+    # there is item with such item_id in the database
+    if not self.persisted? and ordered_detail_count != 0 
+      self.errors.add(:generic_errors, "Ada overlapping tanggal subcription")
       return self
     end
   end

@@ -82,6 +82,38 @@ describe SubcriptionRegistration do
       @sr.should_not be_valid
     end
     
+    context "create subcription registration" do
+      before(:each) do
+        @current_date = DateTime.now 
+        @start_subcription_date = @current_date + 5.days
+        @sr = SubcriptionRegistration.create_object(
+
+          :vehicle_registration_id =>  @car_vr_1.id ,
+          :subcription_product_id  => @sp_car_1.id,
+          :registration_date       => @current_date     ,
+          :start_subcription_date  => @start_subcription_date,
+        )
+        
+      end
+      
+      it "should create finish sucription date" do
+        @sr.finish_subcription_date.should == @start_subcription_date + @sp_car_1.duration.days 
+      end
+      
+      it "should not create overlap subcription" do
+        @sr_2 = SubcriptionRegistration.create_object(
+
+          :vehicle_registration_id =>  @car_vr_1.id ,
+          :subcription_product_id  => @sp_car_1.id,
+          :registration_date       => @current_date     ,
+          :start_subcription_date  => @start_subcription_date,
+        )
+        
+        @sr_2.errors.size.should_not == 0
+        @sr_2.should_not be_valid
+      end
+    end
+    
      
     
     
