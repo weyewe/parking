@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140625063942) do
+ActiveRecord::Schema.define(version: 20140707064622) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -99,11 +99,35 @@ ActiveRecord::Schema.define(version: 20140625063942) do
     t.datetime "updated_at"
   end
 
+  create_table "price_rules", force: true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "roles", force: true do |t|
     t.string   "name",        null: false
     t.string   "title",       null: false
     t.text     "description", null: false
     t.json     "the_role",    null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "subcription_products", force: true do |t|
+    t.integer  "duration",                             default: 0
+    t.string   "name"
+    t.text     "description"
+    t.decimal  "price",       precision: 10, scale: 2, default: 0.0
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "subcription_registrations", force: true do |t|
+    t.integer  "subcription_product"
+    t.integer  "vehicle_registration_id"
+    t.datetime "registration_date"
+    t.datetime "finish_subcription_date"
+    t.datetime "start_subcription_date"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -140,5 +164,22 @@ ActiveRecord::Schema.define(version: 20140625063942) do
 
   add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
+
+  create_table "vehicle_registrations", force: true do |t|
+    t.integer  "customer_id"
+    t.integer  "vehicle_id"
+    t.boolean  "is_deactivated",    default: false
+    t.datetime "deactivation_date"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "vehicles", force: true do |t|
+    t.string   "license_plate_no"
+    t.integer  "vehicle_case"
+    t.string   "description"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
 end

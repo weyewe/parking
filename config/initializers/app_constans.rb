@@ -79,37 +79,8 @@ IMAGE_ASSET_URL = {
   :logo => 'http://s3.amazonaws.com/salmod/app_asset/app_application/logo.png' 
 }
 
-# Application Specific 
-REVISION_STATUS = {
-  :base => 0,
-  :major => 1,
-  :minor => 2 
-}
 
-CLEARANCE_STATUS = {
-  :approved =>1 ,
-  :rejected => 2 
-}
-
-USER_JOB_STATUS = {
-  :observer => 1 , 
-  :worker => 2 
-}
-
-MAINTENANCE_CASE ={
-  :scheduled => 1, 
-  :emergency => 2 
-}
-
-
-DIAGNOSIS_CASE = {
-  :all_ok => 1 ,
-  :require_fix => 2,
-  :require_replacement => 3  
-}
-
-SOLUTION_CASE = {
-  :normal => 1 ,
-  :pending => 2,
-  :solved =>  3    # 
+VEHICLE_CASE = {
+  :car => 1, 
+  :motor => 2 
 }

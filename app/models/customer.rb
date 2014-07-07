@@ -3,9 +3,9 @@ class Customer < ActiveRecord::Base
    
   validates_presence_of :name  
   validates_uniqueness_of :name 
-  has_many :items
-  has_many :maintenances 
   
+  has_many :vehicles, :through => :vehicle_registrations
+  has_many :vehicle_registrations 
  
   
   def self.create_object( params ) 
