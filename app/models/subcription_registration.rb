@@ -12,6 +12,8 @@ class SubcriptionRegistration < ActiveRecord::Base
   validate :valid_vehicle_registration_id
   validate :valid_subcription_product_id  
   
+  validate :vehicle_registration_has_equal_vehicle_case_to_subcription_product
+  
   
   
   
@@ -34,6 +36,16 @@ class SubcriptionRegistration < ActiveRecord::Base
     end
   end
   
+  
+  def vehicle_registration_has_equal_vehicle_case_to_subcription_product
+    return if not vehicle_registration_id.present? 
+    return if not subcription_product_id.present? 
+    
+    if vehicle_registration.vehicle.vehicle_case != subcription_product.vehicle_case 
+      self.errors.add(:generic_errors, "Tipe kendaraan harus sesuai dengan tipe product: harus sama-sama mobil atau motor")
+      return self
+    end
+  end
   
  
   
